@@ -12,5 +12,5 @@
 
 # 示例
 
-参见 [examples](https://github.com/TencentCloud/tencentcloud-speech-sdk-python/tree/master/example) 目录，该目录下包含各语音服务的示例代码。
+参见 [examples](https://github.com/TencentCloud/tencentcloud-speech-sdk-python/tree/master/examples) 目录，该目录下包含各语音服务的示例代码。
 
