@@ -212,10 +212,11 @@ class SpeechRecognizer:
             msg['type'] = "end"
             text_str = json.dumps(msg)
             self.ws.sock.send(text_str)
+            self.ws.close()
         if self.ws:
             if self.wst and self.wst.is_alive():
                 self.wst.join()
-            self.ws.close()
+            
 
     def write(self, data):
         if self.status == CLOSED:
@@ -259,12 +260,16 @@ class SpeechRecognizer:
                     return
 
         def on_error(ws, error):
+            if self.status == CLOSED :
+                return
             logger.error("websocket error %s  voice id %s" %
                          (format(error), self.voice_id))
             self.status = ERROR
 
         def on_close(ws):
             self.status = CLOSED
+            logger.info("websocket closed  voice id %s" %
+                          self.voice_id)
 
         def on_open(ws):
             self.status = OPENED
