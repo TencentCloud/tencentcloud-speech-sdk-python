@@ -237,6 +237,7 @@ class SpeechRecognizer:
     def start(self):
         def on_message(ws, message):
             response = json.loads(message)
+            response['voice_id'] = self.voice_id
             if response['code'] != 0:
                 logger.error("%s server recognition fail %s" %
                              (response['voice_id'], response['message']))
