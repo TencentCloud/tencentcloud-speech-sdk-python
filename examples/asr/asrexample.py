@@ -59,21 +59,19 @@ def process(id):
     recognizer.set_filter_punc(1)
     recognizer.set_filter_dirty(1)
     recognizer.set_need_vad(1)
-    recognizer.set_vad_silence_time(600)
+    #recognizer.set_vad_silence_time(600)
     recognizer.set_voice_format(1)
     recognizer.set_word_info(1)
-    # recognizer.set_nonce("12345678")
+    #recognizer.set_nonce("12345678")
     recognizer.set_convert_num_mode(1)
     try:
         recognizer.start()
         with open(audio, 'rb') as f:
             content = f.read(SLICE_SIZE)
             while content:
-                ret = recognizer.write(content)
-                if ret != 0:
-                    # 发送时发现websocket被关闭会重启websocket，重启后立即被关闭，可能是参数问题，结束识别
-                    raise RuntimeError('Sever shutdown the connection')
+                recognizer.write(content)
                 content = f.read(SLICE_SIZE)
+                #sleep模拟实际实时语音发送间隔
                 time.sleep(0.02)
     except Exception as e:
         print(e)

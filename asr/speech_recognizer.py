@@ -187,7 +187,11 @@ class SpeechRecognizer:
         query_arr['needvad'] = self.need_vad
         query_arr['convert_num_mode'] = self.convert_num_mode
         query_arr['word_info'] = self.word_info
-        query_arr['vad_silence_time'] = self.vad_silence_time
+        if self.vad_silence_time != 0:
+            query_arr['vad_silence_time'] = self.vad_silence_time
+        if self.hotword_id != "":
+            query_arr['hotword_id'] = self.hotword_id
+
         query_arr['secretid'] = self.credential.secret_id
         query_arr['voice_format'] = self.voice_format
         query_arr['voice_id'] = self.voice_id
@@ -200,39 +204,22 @@ class SpeechRecognizer:
         return query_arr
 
     def stop(self):
-        if self.status == CLOSED:
-            self.start()  # 服务器断连，客户端自动重连
-            self.new_start = 1
-        while self.status == STARTED:
-            time.sleep(0.1)
-
-        self.new_start = 0
-        if self.status == OPENED:
+        if self.status == OPENED: 
             msg = {}
             msg['type'] = "end"
             text_str = json.dumps(msg)
             self.ws.sock.send(text_str)
-            self.ws.close()
         if self.ws:
             if self.wst and self.wst.is_alive():
                 self.wst.join()
-            
+        self.ws.close()
+        
 
     def write(self, data):
-        if self.status == CLOSED:
-            self.start()  # 服务器断连，客户端自动重连
-            self.new_start = 1
         while self.status == STARTED:
             time.sleep(0.1)
-
-        self.new_start = 0
-        if self.status == OPENED:
+        if self.status == OPENED: 
             self.ws.sock.send_binary(data)
-            return 0
-        elif self.status == ERROR:  # websocket错误
-            return 1
-        else:
-            return 2
 
     def start(self):
         def on_message(ws, message):
@@ -261,7 +248,7 @@ class SpeechRecognizer:
                     return
 
         def on_error(ws, error):
-            if self.status == CLOSED :
+            if self.status == FINAL :
                 return
             logger.error("websocket error %s  voice id %s" %
                          (format(error), self.voice_id))
@@ -292,10 +279,10 @@ class SpeechRecognizer:
         self.ws = websocket.WebSocketApp(requrl,  None,
                 on_error=on_error, on_close=on_close, on_message=on_message)
         self.ws.on_open = on_open
-        self.status = STARTED
         self.wst = threading.Thread(target=self.ws.run_forever)
         self.wst.daemon = True
         self.wst.start()
+        self.status = STARTED
         response = {}
         response['voice_id'] = self.voice_id
         self.listener.on_recognition_start(response)
