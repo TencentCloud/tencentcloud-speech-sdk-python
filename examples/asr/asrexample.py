@@ -26,8 +26,9 @@ class MySpeechRecognitionListener(speech_recognizer.SpeechRecognitionListener):
             datetime.now().strftime("%Y-%m-%d %H:%M:%S"), response['voice_id']))
 
     def on_sentence_begin(self, response):
-        print("%s|%s|OnRecognitionSentenceBegin\n" % (
-            datetime.now().strftime("%Y-%m-%d %H:%M:%S"), response['voice_id']))
+        rsp_str = json.dumps(response, ensure_ascii=False)
+        print("%s|%s|OnRecognitionSentenceBegin, rsp %s\n" % (
+            datetime.now().strftime("%Y-%m-%d %H:%M:%S"), response['voice_id'], rsp_str))
 
     def on_recognition_result_change(self, response):
         rsp_str = json.dumps(response, ensure_ascii=False)
