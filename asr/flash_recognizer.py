@@ -12,10 +12,10 @@ from common import credential
 class FlashRecognizer:
     '''
     reponse:  
-    字段名	      类型	
+    字段名            类型
     request_id        string
-    status 	      Integer	
-    message	      String	
+    status            Integer    
+    message           String    
     audio_duration    Integer
     flash_result      Result Array
 
@@ -26,9 +26,9 @@ class FlashRecognizer:
 
     Sentence的结构体格式为:
     text              String
-    start_time	      Integer	
-    end_time	      Integer	
-    speaker_id        Integer	
+    start_time        Integer    
+    end_time          Integer    
+    speaker_id        Integer    
     word_list         Word Array
 
     Word的类型为:
