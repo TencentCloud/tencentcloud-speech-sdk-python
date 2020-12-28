@@ -12,10 +12,10 @@ from common import credential
 class FlashRecognizer:
     '''
     reponse:  
-    字段名	      类型	
+    字段名	            类型	
     request_id        string
-    status 	      Integer	
-    message	      String	
+    status 	          Integer	
+    message	          String	
     audio_duration    Integer
     flash_result      Result Array
 
