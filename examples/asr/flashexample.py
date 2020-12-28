@@ -31,9 +31,9 @@ if __name__=="__main__":
         #执行识别
         resultData = recognizer.do_recognize(data)
         resp = json.loads(resultData)
-        status = resp["status"]
-        if status != 0:
-            print("recognize faild! status: ", status, ", message: ", resp["message"])
+        code = resp["code"]
+        if code != 0:
+            print("recognize faild! code: ", code, ", message: ", resp["message"])
             exit(0)
 
         request_id = resp["request_id"]
