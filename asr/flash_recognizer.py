@@ -9,38 +9,8 @@ import os
 import json
 from common import credential
 
-class FlashRecognizer:
-    '''
-    reponse:  
-    字段名            类型
-    request_id        string
-    status            Integer    
-    message           String    
-    audio_duration    Integer
-    flash_result      Result Array
-
-    Result的结构体格式为:
-    text              String
-    channel_id        Integer
-    sentence_list     Sentence Array
-
-    Sentence的结构体格式为:
-    text              String
-    start_time        Integer    
-    end_time          Integer    
-    speaker_id        Integer    
-    word_list         Word Array
-
-    Word的类型为:
-    word              String 
-    start_time        Integer 
-    end_time          Integer 
-    stable_flag：     Integer 
-    '''
-
-    def __init__(self, appid, credential, engine_type):
-        self.credential = credential
-        self.appid = appid
+class FlashRecognitionRequest:
+    def __init__(self, engine_type):
         self.engine_type = engine_type
         self.speaker_diarization = 0
         self.filter_dirty = 0
@@ -78,6 +48,39 @@ class FlashRecognizer:
 
     def set_voice_format(self, voice_format):
         self.voice_format = voice_format
+
+class FlashRecognizer:
+    '''
+    reponse:  
+    字段名            类型
+    request_id        string
+    status            Integer    
+    message           String    
+    audio_duration    Integer
+    flash_result      Result Array
+
+    Result的结构体格式为:
+    text              String
+    channel_id        Integer
+    sentence_list     Sentence Array
+
+    Sentence的结构体格式为:
+    text              String
+    start_time        Integer    
+    end_time          Integer    
+    speaker_id        Integer    
+    word_list         Word Array
+
+    Word的类型为:
+    word              String 
+    start_time        Integer 
+    end_time          Integer 
+    stable_flag：     Integer 
+    '''
+
+    def __init__(self, appid, credential):
+        self.credential = credential
+        self.appid = appid
 
     def _format_sign_string(self, param):
         signstr = "POSTasr.cloud.tencent.com/asr/flash/v1/"
@@ -119,26 +122,26 @@ class FlashRecognizer:
         requrl += signstr[4::]
         return requrl
 
-    def _create_query_arr(self):
+    def _create_query_arr(self, req):
         query_arr = dict()
         query_arr['appid'] = self.appid
         query_arr['secretid'] = self.credential.secret_id
         query_arr['timestamp'] = str(int(time.time()))
-        query_arr['engine_type'] = self.engine_type
-        query_arr['voice_format'] = self.voice_format
-        query_arr['speaker_diarization'] = self.speaker_diarization
-        query_arr['hotword_id'] = self.hotword_id
-        query_arr['filter_dirty'] = self.filter_dirty
-        query_arr['filter_modal'] = self.filter_modal
-        query_arr['filter_punc'] = self.filter_punc
-        query_arr['convert_num_mode'] = self.convert_num_mode
-        query_arr['word_info'] = self.word_info
-        query_arr['first_channel_only'] = self.first_channel_only
+        query_arr['engine_type'] = req.engine_type
+        query_arr['voice_format'] = req.voice_format
+        query_arr['speaker_diarization'] = req.speaker_diarization
+        query_arr['hotword_id'] = req.hotword_id
+        query_arr['filter_dirty'] = req.filter_dirty
+        query_arr['filter_modal'] = req.filter_modal
+        query_arr['filter_punc'] = req.filter_punc
+        query_arr['convert_num_mode'] = req.convert_num_mode
+        query_arr['word_info'] = req.word_info
+        query_arr['first_channel_only'] = req.first_channel_only
         return query_arr
 
-    def do_recognize(self, data):
+    def recognize(self, req, data):
         header = self._build_header()
-        req = self._create_query_arr()
-        req_url = self._build_req_with_signature(self.credential.secret_key, req, header)
+        query_arr = self._create_query_arr(req)
+        req_url = self._build_req_with_signature(self.credential.secret_key, query_arr, header)
         r = requests.post(req_url, headers=header, data=data)
         return r.text
