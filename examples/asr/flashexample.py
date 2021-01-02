@@ -58,4 +58,6 @@ if __name__=="__main__":
         #大多数音频是单声道，对应一个channl_result
         for channl_result in resp["flash_result"]:
             print("channel_id: ", channl_result["channel_id"])
+            # 这里如果报错: UnicodeEncodeError: 'ascii' codec can't encode characters
+            # 请运行该命令跑脚本：PYTHONIOENCODING=utf-8 python flashexample.py
             print(channl_result["text"])
