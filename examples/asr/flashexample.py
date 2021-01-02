@@ -9,6 +9,7 @@ sys.path.append("../..")
 from common import credential
 from asr import flash_recognizer
 
+#注意：使用前务必先填写APPID、SECRET_ID、SECRET_KEY，否则会无法运行！！！
 APPID = "" 
 SECRET_ID = ""
 SECRET_KEY = ""
@@ -25,6 +26,8 @@ if __name__=="__main__":
 
     credential_var = credential.Credential(SECRET_ID, SECRET_KEY)
     recognizer = flash_recognizer.FlashRecognizer(APPID, credential_var)
+    
+    #音频文件路径
     audio = "./test.wav"
     with open(audio, 'rb') as f:
         #读取音频数据
