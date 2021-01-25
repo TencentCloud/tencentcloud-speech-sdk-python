@@ -8,7 +8,7 @@
 
 1. python 环境
 2. 安装websocket, websocket-client, requests
-3. 在腾讯云控制台[账号信息]页面查看账号APPID，[访问管理](https://console.cloud.tencent.com/cam/capi)页面获取 SecretID 和 SecretKey 。
+3. 在腾讯云控制台[账号信息]（https://console.cloud.tencent.com/developer）页面查看账号APPID，[访问管理](https://console.cloud.tencent.com/cam/capi)页面获取 SecretID 和 SecretKey 。
 
 # 示例
 
