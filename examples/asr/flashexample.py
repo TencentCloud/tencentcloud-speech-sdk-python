@@ -20,7 +20,7 @@ if __name__=="__main__":
         print("Please set APPID!")
         exit(0)
     if SECRET_ID == "":
-        print("Please set APPID!")
+        print("Please set SECRET_ID!")
         exit(0)
     if SECRET_KEY == "":
         print("Please set SECRET_KEY!")
