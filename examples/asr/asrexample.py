@@ -14,7 +14,7 @@ APPID = ""
 SECRET_ID = ""
 SECRET_KEY = ""
 ENGINE_MODEL_TYPE = "16k_zh"
-SLICE_SIZE = 640
+SLICE_SIZE = 6400
 
 
 class MySpeechRecognitionListener(speech_recognizer.SpeechRecognitionListener):
