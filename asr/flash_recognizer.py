@@ -13,12 +13,13 @@ class FlashRecognitionRequest:
     def __init__(self, engine_type):
         self.engine_type = engine_type
         self.speaker_diarization = 0
+        self.hotword_id = ""
+        self.customization_id = ""
         self.filter_dirty = 0
         self.filter_modal = 0
         self.filter_punc = 0
         self.convert_num_mode = 1
         self.word_info = 0
-        self.hotword_id = ""
         self.voice_format = ""
         self.first_channel_only = 1
 
@@ -45,6 +46,9 @@ class FlashRecognitionRequest:
 
     def set_hotword_id(self, hotword_id):
         self.hotword_id = hotword_id
+
+    def set_customization_id(self, customization_id):
+        self.customization_id = customization_id
 
     def set_voice_format(self, voice_format):
         self.voice_format = voice_format
@@ -131,6 +135,7 @@ class FlashRecognizer:
         query_arr['voice_format'] = req.voice_format
         query_arr['speaker_diarization'] = req.speaker_diarization
         query_arr['hotword_id'] = req.hotword_id
+        query_arr['customization_id'] = req.customization_id
         query_arr['filter_dirty'] = req.filter_dirty
         query_arr['filter_modal'] = req.filter_modal
         query_arr['filter_punc'] = req.filter_punc
