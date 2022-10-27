@@ -150,7 +150,7 @@ class SpeechRecognizer:
         return signstr
 
     def create_query_string(self, param):
-        signstr = "ws://asr.cloud.tencent.com/asr/v2/"
+        signstr = "wss://asr.cloud.tencent.com/asr/v2/"
         for t in param:
             if 'appid' in t:
                 signstr += str(t[1])

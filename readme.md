@@ -7,7 +7,8 @@
 # 依赖环境
 
 1. python 环境
-2. 安装websocket, websocket-client, requests
+2. pip命令行安装websocket, websocket-client, requests 
+   注意:websocket-client必须是0.48版本
 3. 在腾讯云控制台[账号信息](https://console.cloud.tencent.com/developer)页面查看账号APPID，[访问管理](https://console.cloud.tencent.com/cam/capi)页面获取 SecretID 和 SecretKey 。
 
 # 示例
