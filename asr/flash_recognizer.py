@@ -22,6 +22,8 @@ class FlashRecognitionRequest:
         self.word_info = 0
         self.voice_format = ""
         self.first_channel_only = 1
+        self.reinforce_hotword = 0
+        self.sentence_max_length = 0
 
     def set_first_channel_only(self, first_channel_only):
         self.first_channel_only = first_channel_only
@@ -52,6 +54,14 @@ class FlashRecognitionRequest:
 
     def set_voice_format(self, voice_format):
         self.voice_format = voice_format
+
+    def set_sentence_max_length(self, sentence_max_length):
+        self.sentence_max_length = sentence_max_length
+
+    def set_reinforce_hotword(self, reinforce_hotword):
+        self.reinforce_hotword = reinforce_hotword
+
+
 
 class FlashRecognizer:
     '''
@@ -142,6 +152,8 @@ class FlashRecognizer:
         query_arr['convert_num_mode'] = req.convert_num_mode
         query_arr['word_info'] = req.word_info
         query_arr['first_channel_only'] = req.first_channel_only
+        query_arr['reinforce_hotword'] = req.reinforce_hotword
+        query_arr['sentence_max_length'] = req.sentence_max_length
         return query_arr
 
     def recognize(self, req, data):

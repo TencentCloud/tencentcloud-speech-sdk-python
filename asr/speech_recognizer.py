@@ -97,6 +97,7 @@ class SpeechRecognizer:
         self.need_vad = 0
         self.vad_silence_time = 0
         self.hotword_id = ""
+        self.reinforce_hotword = 0
         self.voice_format = 4
         self.nonce = ""
 
@@ -129,6 +130,9 @@ class SpeechRecognizer:
 
     def set_nonce(self, nonce):
         self.nonce = nonce
+
+    def set_reinforce_hotword(self, reinforce_hotword):
+        self.reinforce_hotword = reinforce_hotword
 
     def format_sign_string(self, param):
         signstr = "asr.cloud.tencent.com/asr/v2/"
@@ -201,6 +205,7 @@ class SpeechRecognizer:
         else:
             query_arr['nonce'] = query_arr['timestamp']
         query_arr['expired'] = int(time.time()) + 24 * 60 * 60
+        query_arr['reinforce_hotword'] = self.reinforce_hotword
         return query_arr
 
     def stop(self):
