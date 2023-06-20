@@ -18,6 +18,7 @@ def is_python3():
     return False
 
 
+#实时识别语音使用
 class SpeechRecognitionListener():
     '''
     reponse:  
@@ -75,7 +76,7 @@ FINAL = 3
 ERROR = 4
 CLOSED = 5
 
-
+#实时识别语音使用
 class SpeechRecognizer:
 
     def __init__(self, appid, credential, engine_model_type, listener):

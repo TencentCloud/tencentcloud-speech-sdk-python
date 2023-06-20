@@ -9,6 +9,7 @@ import os
 import json
 from common import credential
 
+#录音识别极速版使用
 class FlashRecognitionRequest:
     def __init__(self, engine_type):
         self.engine_type = engine_type
