@@ -1,3 +1,7 @@
-examples/tts/speech_synthesizer_output.wav
 __pycache__
 .DS_Store
+.idea
+*.wav
+*.mp3
+*.pcm
+*.log

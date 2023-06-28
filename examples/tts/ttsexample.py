@@ -42,10 +42,7 @@ class MySpeechSynthesisListener(speech_synthesizer_ws.SpeechSynthesisListener):
         '''
         session_id: 请求session id，类型字符串
         '''
-        if is_python3():
-            super().on_synthesis_start(session_id)
-        else:
-            super(MySpeechSynthesisListener, self).on_synthesis_start(session_id)
+        super().on_synthesis_start(session_id)
         
         # TODO 合成开始，添加业务逻辑
         if not self.audio_file:
@@ -53,10 +50,7 @@ class MySpeechSynthesisListener(speech_synthesizer_ws.SpeechSynthesisListener):
         self.audio_data = bytes()
 
     def on_synthesis_end(self):
-        if is_python3():
-            super().on_synthesis_end()
-        else:
-            super(MySpeechSynthesisListener, self).on_synthesis_end()
+        super().on_synthesis_end()
 
         # TODO 合成结束，添加业务逻辑
         logger.info("write audio file, path={}, size={}".format(
@@ -82,10 +76,7 @@ class MySpeechSynthesisListener(speech_synthesizer_ws.SpeechSynthesisListener):
         '''
         audio_bytes: 二进制音频，类型 bytes
         '''
-        if is_python3():
-            super().on_audio_result(audio_bytes)
-        else:
-            super(MySpeechSynthesisListener, self).on_audio_result(audio_bytes)
+        super().on_audio_result(audio_bytes)
         
         # TODO 接收到二进制音频数据，添加实时播放或保存逻辑
         self.audio_data += audio_bytes
@@ -115,10 +106,7 @@ class MySpeechSynthesisListener(speech_synthesizer_ws.SpeechSynthesisListener):
         EndIndex    int     结束索引
         Phoneme     string  音素
         '''
-        if is_python3():
-            super().on_text_result(response)
-        else:
-            super(MySpeechSynthesisListener, self).on_text_result(response)
+        super().on_text_result(response)
 
         # TODO 接收到文本数据，添加业务逻辑
         result = response["result"]
@@ -133,10 +121,7 @@ class MySpeechSynthesisListener(speech_synthesizer_ws.SpeechSynthesisListener):
         code        int         错误码
         message     string      错误信息
         '''
-        if is_python3():
-            super().on_synthesis_fail(response)
-        else:
-            super(MySpeechSynthesisListener, self).on_synthesis_fail(response)
+        super().on_synthesis_fail(response)
 
         # TODO 合成失败，添加错误处理逻辑
         err_code = response["code"]
@@ -174,5 +159,7 @@ def process_multithread(number):
 
 
 if __name__ == "__main__":
-    #process(0)
+    if not is_python3():
+        print("only support python3")
+        sys.exit(0)
     process_multithread(1)

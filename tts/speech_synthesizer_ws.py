@@ -102,11 +102,8 @@ class SpeechSynthesizer:
         for key in sort_dict:
             sign_str = sign_str + key + "=" + str(params[key]) + '&'
         sign_str = sign_str[:-1]
-        if is_python3():
-            secret_key = self.credential.secret_key.encode('utf-8')
-            sign_str = sign_str.encode('utf-8')
-        else:
-            secret_key = self.credential.secret_key
+        secret_key = self.credential.secret_key.encode('utf-8')
+        sign_str = sign_str.encode('utf-8')
         hmacstr = hmac.new(secret_key, sign_str, hashlib.sha1).digest()
         s = base64.b64encode(hmacstr)
         s = s.decode('utf-8')
@@ -135,10 +132,7 @@ class SpeechSynthesizer:
         return params
 
     def __create_query_string(self, param):
-        if is_python3():
-            param['Text'] = urllib.parse.quote(param['Text'])
-        else:
-            param['Text'] = urllib.quote(param['Text'])
+        param['Text'] = urllib.parse.quote(param['Text'])
         
         param = sorted(param.items(), key=lambda d: d[0])
 
@@ -211,10 +205,7 @@ class SpeechSynthesizer:
         signature = self.__gen_signature(params)
         requrl = self.__create_query_string(params)
 
-        if is_python3():
-            autho = urllib.parse.quote(signature)
-        else:
-            autho = urllib.quote(signature)
+        autho = urllib.parse.quote(signature)
         requrl += "&Signature=%s" % autho
 
         self.ws = websocket.WebSocketApp(requrl, None,
