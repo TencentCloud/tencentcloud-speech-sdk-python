@@ -6,11 +6,10 @@ import base64
 import time
 import json
 import threading
-import websocket
+from websocket import ABNF, WebSocketApp
 import uuid
 import urllib
 from common.log import logger
-from common.utils import is_python3
 
 
 _PROTOCOL = "wss://"
@@ -161,10 +160,10 @@ class SpeechSynthesizer:
         def _on_data(ws, data, opcode, flag):
             # NOTE print all message that client received
             # logger.info("data={} opcode={} flag={}".format(data, opcode, flag))
-            if opcode == websocket.ABNF.OPCODE_BINARY:
+            if opcode == ABNF.OPCODE_BINARY:
                 self.listener.on_audio_result(data) # <class 'bytes'>
                 pass
-            elif opcode == websocket.ABNF.OPCODE_TEXT:
+            elif opcode == ABNF.OPCODE_TEXT:
                 resp = json.loads(data) # WSResponseMessage
                 if resp['code'] != 0:
                     logger.error("server synthesis fail request_id={} code={} msg={}".format(
@@ -208,7 +207,7 @@ class SpeechSynthesizer:
         autho = urllib.parse.quote(signature)
         requrl += "&Signature=%s" % autho
 
-        self.ws = websocket.WebSocketApp(requrl, None,
+        self.ws = WebSocketApp(requrl, None,
             on_error=_on_error, on_close=_on_close,
             on_data=_on_data)
         self.ws.on_open = _on_open
