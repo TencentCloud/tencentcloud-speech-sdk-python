@@ -14,6 +14,8 @@ from soe import speaking_assessment
 APPID = ""
 SECRET_ID = ""
 SECRET_KEY = ""
+# 只有临时秘钥鉴权需要
+TOKEN = ""
 ENGINE_MODEL_TYPE = "16k_en"
 SLICE_SIZE = 3200
 
@@ -45,6 +47,7 @@ class MySpeechRecognitionListener(speaking_assessment.SpeakingAssessmentListener
 def process(id):
     audio = "english.wav"
     listener = MySpeechRecognitionListener(id)
+    # 临时秘钥鉴权使用带token的方式 credential_var = credential.Credential(SECRET_ID, SECRET_KEY, TOKEN)
     credential_var = credential.Credential(SECRET_ID, SECRET_KEY)
     recognizer = speaking_assessment.SpeakingAssessment(
         APPID, credential_var, ENGINE_MODEL_TYPE,  listener)

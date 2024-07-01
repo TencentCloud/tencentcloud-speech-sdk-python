@@ -178,6 +178,8 @@ class SpeakingAssessment:
         query_arr['score_coeff'] = self.score_coeff
         query_arr['sentence_info_enabled'] = self.sentence_info_enabled
         query_arr['secretid'] = self.credential.secret_id
+        if self.credential.token != "":
+            query_arr['token'] = self.credential.token
         query_arr['voice_format'] = self.voice_format
         query_arr['voice_id'] = self.voice_id
         query_arr['timestamp'] = str(int(time.time()))

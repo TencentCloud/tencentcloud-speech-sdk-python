@@ -73,8 +73,6 @@ class SpeechSynthesizer:
         self.speed = 0
         self.session_id = ""
         self.enable_subtitle = True
-        self.emotion_category = ""
-        self.emotion_intensity = 0
 
     def set_voice_type(self, voice_type):
         self.voice_type = voice_type
@@ -97,19 +95,12 @@ class SpeechSynthesizer:
     def set_enable_subtitle(self, enable_subtitle):
         self.enable_subtitle = enable_subtitle
 
-    def set_emotion_category(self, emotion_category):
-        self.emotion_category = emotion_category
-    
-    def set_emotion_intensity(self, emotion_intensity):
-        self.emotion_intensity = emotion_intensity
-
     def __gen_signature(self, params):
         sort_dict = sorted(params.keys())
         sign_str = "GET" + _HOST + _PATH + "?"
         for key in sort_dict:
             sign_str = sign_str + key + "=" + str(params[key]) + '&'
         sign_str = sign_str[:-1]
-        logger.info("sign_url={}".format(sign_str))
         secret_key = self.credential.secret_key.encode('utf-8')
         sign_str = sign_str.encode('utf-8')
         hmacstr = hmac.new(secret_key, sign_str, hashlib.sha1).digest()
@@ -133,10 +124,6 @@ class SpeechSynthesizer:
         params['SessionId'] = self.session_id
         params['Text'] = self.text
         params['EnableSubtitle'] = self.enable_subtitle
-        if self.emotion_category != "":
-            params['EmotionCategory'] = self.emotion_category
-            if self.emotion_intensity != 0:
-                params['EmotionIntensity'] = self.emotion_intensity
 
         timestamp = int(time.time())
         params['Timestamp'] = timestamp
@@ -219,7 +206,6 @@ class SpeechSynthesizer:
 
         autho = urllib.parse.quote(signature)
         requrl += "&Signature=%s" % autho
-        logger.info("req_url={}".format(requrl))
 
         self.ws = WebSocketApp(requrl, None,
             on_error=_on_error, on_close=_on_close,
