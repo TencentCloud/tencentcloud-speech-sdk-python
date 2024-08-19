@@ -98,7 +98,9 @@ class SpeechRecognizer:
         self.need_vad = 0
         self.vad_silence_time = 0
         self.hotword_id = ""
+        self.hotword_list = ""
         self.reinforce_hotword = 0
+        self.noise_threshold = 0
         self.voice_format = 4
         self.nonce = ""
 
@@ -126,6 +128,9 @@ class SpeechRecognizer:
     def set_hotword_id(self, hotword_id):
         self.hotword_id = hotword_id
 
+    def set_hotword_list(self, hotword_list):
+        self.hotword_list = hotword_list
+
     def set_voice_format(self, voice_format):
         self.voice_format = voice_format
 
@@ -134,6 +139,9 @@ class SpeechRecognizer:
 
     def set_reinforce_hotword(self, reinforce_hotword):
         self.reinforce_hotword = reinforce_hotword
+
+    def set_noise_threshold(self, noise_threshold):
+        self.noise_threshold = noise_threshold
 
     def format_sign_string(self, param):
         signstr = "asr.cloud.tencent.com/asr/v2/"
@@ -196,6 +204,8 @@ class SpeechRecognizer:
             query_arr['vad_silence_time'] = self.vad_silence_time
         if self.hotword_id != "":
             query_arr['hotword_id'] = self.hotword_id
+        if self.hotword_list != "":
+            query_arr['hotword_list'] = self.hotword_list
 
         query_arr['secretid'] = self.credential.secret_id
         query_arr['voice_format'] = self.voice_format
@@ -207,6 +217,7 @@ class SpeechRecognizer:
             query_arr['nonce'] = query_arr['timestamp']
         query_arr['expired'] = int(time.time()) + 24 * 60 * 60
         query_arr['reinforce_hotword'] = self.reinforce_hotword
+        query_arr['noise_threshold'] = self.noise_threshold
         return query_arr
 
     def stop(self):

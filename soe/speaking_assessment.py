@@ -221,6 +221,7 @@ class SpeakingAssessment:
                 self.result = message
                 self.listener.on_recognition_complete(response)
                 logger.info("%s recognition complete" % response['voice_id'])
+                self.ws.close()
                 return
             else:
                 if response["result"] is not None:

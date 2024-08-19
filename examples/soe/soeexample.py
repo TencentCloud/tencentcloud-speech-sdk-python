@@ -65,7 +65,7 @@ def process(id):
                 recognizer.write(content)
                 content = f.read(SLICE_SIZE)
                 #sleep模拟实际实时语音发送间隔
-                time.sleep(1)
+                time.sleep(0.02)
     except Exception as e:
         print(e)
     finally:
