@@ -19,6 +19,7 @@ SECRET_KEY = ''
 
 TEXT = "欢迎使用腾讯云实时语音合成"
 VOICETYPE = 101001 # 音色类型
+FASTVOICETYPE = ""
 CODEC = "pcm" # 音频格式：pcm/mp3
 SAMPLE_RATE = 16000 # 音频采样率：8000/16000
 ENABLE_SUBTITLE = True
@@ -138,6 +139,7 @@ def process(id):
     synthesizer.set_codec(CODEC)
     synthesizer.set_sample_rate(SAMPLE_RATE)
     synthesizer.set_enable_subtitle(ENABLE_SUBTITLE)
+    synthesizer.set_fast_voice_type(FASTVOICETYPE)
     
     synthesizer.start()
     # wait for processing complete
