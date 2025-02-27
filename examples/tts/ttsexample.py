@@ -172,7 +172,7 @@ if __name__ == "__main__":
     
     #### 示例二：多线程调用 ####
     # thread_concurrency_num = 3 # 最大线程数
-    # with ProcessPoolExecutor(max_workers=thread_concurrency_num) as executor:
+    # with ThreadPoolExecutor(max_workers=thread_concurrency_num) as executor:
     #     futures = [executor.submit(process, idx, line) for idx, line in enumerate(lines)]
     #     for future in as_completed(futures):
     #         result = future.result()
