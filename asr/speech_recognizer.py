@@ -103,6 +103,7 @@ class SpeechRecognizer:
         self.noise_threshold = 0
         self.voice_format = 4
         self.nonce = ""
+        self.replace_text_id = ""
 
     def set_filter_dirty(self, filter_dirty):
         self.filter_dirty = filter_dirty
@@ -142,6 +143,9 @@ class SpeechRecognizer:
 
     def set_noise_threshold(self, noise_threshold):
         self.noise_threshold = noise_threshold
+
+    def set_replace_text_id(self, replace_text_id):
+        self.replace_text_id = replace_text_id
 
     def format_sign_string(self, param):
         signstr = "asr.cloud.tencent.com/asr/v2/"
@@ -206,7 +210,8 @@ class SpeechRecognizer:
             query_arr['hotword_id'] = self.hotword_id
         if self.hotword_list != "":
             query_arr['hotword_list'] = self.hotword_list
-
+        if self.replace_text_id != "":
+            query_arr['replace_text_id'] = self.replace_text_id
         query_arr['secretid'] = self.credential.secret_id
         query_arr['voice_format'] = self.voice_format
         query_arr['voice_id'] = self.voice_id
