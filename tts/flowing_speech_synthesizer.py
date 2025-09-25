@@ -57,7 +57,6 @@ CLOSED = 5
 
 FlowingSpeechSynthesizer_ACTION_SYNTHESIS = "ACTION_SYNTHESIS"
 FlowingSpeechSynthesizer_ACTION_COMPLETE = "ACTION_COMPLETE"
-FlowingSpeechSynthesizer_ACTION_RESET = "ACTION_RESET"
 
 
 class FlowingSpeechSynthesizer:
@@ -186,10 +185,6 @@ class FlowingSpeechSynthesizer:
     def complete(self, action = FlowingSpeechSynthesizer_ACTION_COMPLETE):
         logger.info("complete: action={}".format(action))
         self.__do_send(action, "")
-    
-    def reset(self, action = FlowingSpeechSynthesizer_ACTION_RESET):
-        logger.info("reset: action={}".format(action))
-        self.__do_send(action, "")
 
     def wait_ready(self, timeout_ms):
         timeout_start = int(time.time() * 1000)
@@ -232,9 +227,6 @@ class FlowingSpeechSynthesizer:
                 if "ready" in resp and resp['ready'] == 1:
                     logger.info("recv READY frame")
                     self.ready = True
-                    return
-                if "reset" in resp and resp['reset'] == 1:
-                    logger.info("recv RESET frame")
                     return
                 if "heartbeat" in resp and resp['heartbeat'] == 1:
                     logger.info("recv HEARTBEAT frame")

@@ -15,8 +15,6 @@ class FlashRecognitionRequest:
         self.engine_type = engine_type
         self.speaker_diarization = 0
         self.hotword_id = ""
-        self.hotword_list = ""
-        self.input_sample_rate = 0
         self.customization_id = ""
         self.filter_dirty = 0
         self.filter_modal = 0
@@ -51,12 +49,6 @@ class FlashRecognitionRequest:
 
     def set_hotword_id(self, hotword_id):
         self.hotword_id = hotword_id
-
-    def set_hotword_list(self, hotword_list):
-        self.hotword_list = hotword_list
-
-    def set_input_sample_rate(self, input_sample_rate):
-        self.input_sample_rate = input_sample_rate
 
     def set_customization_id(self, customization_id):
         self.customization_id = customization_id
@@ -153,12 +145,7 @@ class FlashRecognizer:
         query_arr['engine_type'] = req.engine_type
         query_arr['voice_format'] = req.voice_format
         query_arr['speaker_diarization'] = req.speaker_diarization
-        if req.hotword_id != "":
-            query_arr['hotword_id'] = req.hotword_id
-        if req.hotword_list != "":
-            query_arr['hotword_list'] = req.hotword_list
-        if req.input_sample_rate != 0:
-            query_arr['input_sample_rate'] = req.input_sample_rate
+        query_arr['hotword_id'] = req.hotword_id
         query_arr['customization_id'] = req.customization_id
         query_arr['filter_dirty'] = req.filter_dirty
         query_arr['filter_modal'] = req.filter_modal

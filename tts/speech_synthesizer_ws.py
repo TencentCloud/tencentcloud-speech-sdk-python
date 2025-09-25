@@ -73,7 +73,6 @@ class SpeechSynthesizer:
         self.speed = 0
         self.session_id = ""
         self.enable_subtitle = True
-        self.fast_voice_type = ""
 
     def set_voice_type(self, voice_type):
         self.voice_type = voice_type
@@ -95,9 +94,6 @@ class SpeechSynthesizer:
 
     def set_enable_subtitle(self, enable_subtitle):
         self.enable_subtitle = enable_subtitle
-
-    def set_fast_voice_type(self, fast_voice_type):
-        self.fast_voice_type = fast_voice_type
 
     def __gen_signature(self, params):
         sort_dict = sorted(params.keys())
@@ -128,8 +124,6 @@ class SpeechSynthesizer:
         params['SessionId'] = self.session_id
         params['Text'] = self.text
         params['EnableSubtitle'] = self.enable_subtitle
-        if len(self.fast_voice_type) > 0:
-            params['FastVoiceType'] = self.fast_voice_type
 
         timestamp = int(time.time())
         params['Timestamp'] = timestamp
