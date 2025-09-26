@@ -103,9 +103,13 @@ class SpeakingAssessment:
         self.sentence_info_enabled = 0
         self.voice_format = 0
         self.nonce = ""
+        self.rec_mode = 0
 
     def set_text_mode(self, text_mode):
         self.text_mode = text_mode
+    
+    def set_rec_mode(self, rec_mode):
+        self.rec_mode = rec_mode
 
     def set_ref_text(self, ref_text):
         self.ref_text = ref_text
@@ -172,6 +176,7 @@ class SpeakingAssessment:
         query_arr['appid'] = self.appid
         query_arr['server_engine_type'] = self.server_engine_type
         query_arr['text_mode'] = self.text_mode
+        query_arr['rec_mode'] = self.rec_mode
         query_arr['ref_text'] = self.ref_text
         query_arr['keyword'] = self.keyword
         query_arr['eval_mode'] = self.eval_mode
@@ -221,6 +226,7 @@ class SpeakingAssessment:
                 self.result = message
                 self.listener.on_recognition_complete(response)
                 logger.info("%s recognition complete" % response['voice_id'])
+                self.ws.close()
                 return
             else:
                 if response["result"] is not None:

@@ -6,7 +6,8 @@ sys.path.append("../..")
 
 import wave
 import time
-import threading
+from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor, as_completed
+
 from common import credential
 from tts import speech_synthesizer_ws
 from common.log import logger
@@ -17,8 +18,8 @@ APPID = 0
 SECRET_ID = ''
 SECRET_KEY = ''
 
-TEXT = "欢迎使用腾讯云实时语音合成"
 VOICETYPE = 101001 # 音色类型
+FASTVOICETYPE = ""
 CODEC = "pcm" # 音频格式：pcm/mp3
 SAMPLE_RATE = 16000 # 音频采样率：8000/16000
 ENABLE_SUBTITLE = True
@@ -46,7 +47,7 @@ class MySpeechSynthesisListener(speech_synthesizer_ws.SpeechSynthesisListener):
         
         # TODO 合成开始，添加业务逻辑
         if not self.audio_file:
-            self.audio_file = "speech_synthesis_output." + self.codec
+            self.audio_file = "speech_synthesis_output_" + str(self.id) + "." + self.codec
         self.audio_data = bytes()
 
     def on_synthesis_end(self):
@@ -128,38 +129,59 @@ class MySpeechSynthesisListener(speech_synthesizer_ws.SpeechSynthesisListener):
         err_msg = response["message"]
         
 
-def process(id):
+def process(id, text):
+    logger.info("process start: idx={} text={}".format(id, text))
     listener = MySpeechSynthesisListener(id, CODEC, SAMPLE_RATE)
     credential_var = credential.Credential(SECRET_ID, SECRET_KEY)
     synthesizer = speech_synthesizer_ws.SpeechSynthesizer(
         APPID, credential_var, listener)
-    synthesizer.set_text(TEXT)
+    synthesizer.set_text(text)
     synthesizer.set_voice_type(VOICETYPE)
     synthesizer.set_codec(CODEC)
     synthesizer.set_sample_rate(SAMPLE_RATE)
     synthesizer.set_enable_subtitle(ENABLE_SUBTITLE)
+    synthesizer.set_fast_voice_type(FASTVOICETYPE)
     
     synthesizer.start()
     # wait for processing complete
     synthesizer.wait()
 
-    logger.info("process done")
+    logger.info("process done: idx={} text={}".format(id, text))
+    return id
 
-
-def process_multithread(number):
-    thread_list = []
-    for i in range(0, number):
-        thread = threading.Thread(target=process, args=(i,))
-        thread_list.append(thread)
-        thread.start()
-        print(i)
-
-    for thread in thread_list:
-        thread.join()
-
+def read_tts_text():
+    lines_list = []
+    with open('tts_text.txt', 'r', encoding='utf-8') as file:
+        for line in file:
+            lines_list.append(line.strip())
+    # print("total read {} lines".format(len(lines_list)))
+    return lines_list
 
 if __name__ == "__main__":
     if not is_python3():
         print("only support python3")
         sys.exit(0)
-    process_multithread(1)
+
+    # 读取示例文本
+    lines = read_tts_text()
+
+    #### 示例一：单线程串行调用 ####
+    for idx, line in enumerate(lines):
+        result = process(idx, line)
+        print(f"\nTask {result} completed\n")
+    
+    #### 示例二：多线程调用 ####
+    # thread_concurrency_num = 3 # 最大线程数
+    # with ThreadPoolExecutor(max_workers=thread_concurrency_num) as executor:
+    #     futures = [executor.submit(process, idx, line) for idx, line in enumerate(lines)]
+    #     for future in as_completed(futures):
+    #         result = future.result()
+    #         print(f"\nTask {result} completed\n")
+
+    #### 示例三：多进程调用（适用于高并发场景） ####
+    # process_concurrency_num = 3 # 最大进程数
+    # with ProcessPoolExecutor(max_workers=process_concurrency_num) as executor:
+    #     futures = [executor.submit(process, idx, line) for idx, line in enumerate(lines)]
+    #     for future in as_completed(futures):
+    #         result = future.result()
+    #         print(f"\nTask {result} completed\n")
