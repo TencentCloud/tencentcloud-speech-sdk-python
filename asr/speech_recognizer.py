@@ -105,9 +105,14 @@ class SpeechRecognizer:
         self.nonce = ""
         self.replace_text_id = ""
         self.language_judgment = 0
+        self.speaker_diarization = 0
+
     #适用于中英粤的语种识别参考参数
     def set_language_judgment(self, language_judgment):
         self.language_judgment = language_judgment
+
+    def set_speaker_diarization(self, speaker_diarization):
+        self.speaker_diarization = speaker_diarization
 
     def set_filter_dirty(self, filter_dirty):
         self.filter_dirty = filter_dirty
@@ -228,6 +233,7 @@ class SpeechRecognizer:
         query_arr['expired'] = int(time.time()) + 24 * 60 * 60
         query_arr['reinforce_hotword'] = self.reinforce_hotword
         query_arr['noise_threshold'] = self.noise_threshold
+        query_arr['speaker_diarization'] = self.speaker_diarization
         return query_arr
 
     def stop(self):
