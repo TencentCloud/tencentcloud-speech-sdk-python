@@ -186,11 +186,13 @@ class SpeechRecognizer:
             tmp = x
             if 'appid' in x:
                 continue
-            for t in tmp:
-                signstr += str(t)
-                signstr += "="
-            signstr = signstr[:-1]
-            signstr += "&"
+            key = str(tmp[0])
+            value = str(tmp[1])
+            if is_python3():
+                value = urllib.parse.quote(value, safe='')
+            else:
+                value = urllib.quote(value, safe='')
+            signstr += key + "=" + value + "&"
         signstr = signstr[:-1]
         return signstr
 
@@ -305,9 +307,9 @@ class SpeechRecognizer:
         autho = self.sign(signstr, self.credential.secret_key)
         requrl = self.create_query_string(query)
         if is_python3():
-            autho = urllib.parse.quote(autho)
+            autho = urllib.parse.quote(autho, safe='')
         else:
-            autho = urllib.quote(autho)
+            autho = urllib.quote(autho, safe='')
         requrl += "&signature=%s" % autho
         self.ws = websocket.WebSocketApp(requrl,  None,
                 on_error=on_error, on_close=on_close, on_message=on_message)
