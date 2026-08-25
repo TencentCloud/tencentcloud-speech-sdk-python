@@ -67,6 +67,9 @@ def process(id):
     recognizer.set_convert_num_mode(1)
     try:
         recognizer.start()
+        # recognizer.write_context(dialog=[{"question": "问题", "answer": "回答"}])
+        # recognizer.write_context(prompt=[{"context_data": [{"text": "上下文"}]}])
+        # recognizer.write_context(hotword_list="腾讯云|10,实时识别|8")
         with open(audio, 'rb') as f:
             content = f.read(SLICE_SIZE)
             while content:

@@ -256,6 +256,19 @@ class SpeechRecognizer:
         if self.status == OPENED: 
             self.ws.sock.send_binary(data)
 
+    def write_context(self, dialog=None, prompt=None, hotword_list=None):
+        while self.status == STARTED:
+            time.sleep(0.1)
+        if self.status == OPENED:
+            context = {'context_type': 'context'}
+            if dialog is not None:
+                context['dialog'] = dialog
+            if prompt is not None:
+                context['prompt'] = prompt
+            if hotword_list is not None:
+                context['hotword_list'] = hotword_list
+            self.ws.sock.send(json.dumps(context))
+
     def start(self):
         def on_message(ws, message):
             response = json.loads(message)
@@ -289,7 +302,7 @@ class SpeechRecognizer:
                          (format(error), self.voice_id))
             self.status = ERROR
 
-        def on_close(ws):
+        def on_close(ws, close_status_code=None, close_msg=None):
             self.status = CLOSED
             logger.info("websocket closed  voice id %s" %
                           self.voice_id)
