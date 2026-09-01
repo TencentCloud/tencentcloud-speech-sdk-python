@@ -15,6 +15,7 @@ from common.utils import is_python3
 
 _PROTOCOL = "wss://"
 _HOST = "tts.cloud.tencent.com"
+_HOST_INTERNATIONAL = "tts-international.tencentcloud.com"
 _PATH = "/stream_wsv2"
 _ACTION = "TextToStreamAudioWSv2"
 
@@ -81,6 +82,7 @@ class FlowingSpeechSynthesizer:
         self.enable_subtitle = 0
         self.emotion_category = ""
         self.emotion_intensity = 100
+        self.account_area = "0"
 
     def set_voice_type(self, voice_type):
         self.voice_type = voice_type
@@ -105,6 +107,14 @@ class FlowingSpeechSynthesizer:
 
     def set_enable_subtitle(self, enable_subtitle):
         self.enable_subtitle = enable_subtitle
+
+    def set_account_area(self, account_area):
+        self.account_area = account_area
+
+    def __get_host(self):
+        if self.account_area == "1":
+            return _HOST_INTERNATIONAL
+        return _HOST
 
     def __gen_signature(self, params):
         sort_dict = sorted(params.keys())
@@ -139,8 +149,10 @@ class FlowingSpeechSynthesizer:
         params['SessionId'] = self.session_id
         params['EnableSubtitle'] = self.enable_subtitle
         if self.emotion_category != "":
-            params['EmotionCategory']= self.emotion_category
-            params['EmotionIntensity']= self.emotion_intensity
+            params['EmotionCategory'] = self.emotion_category
+            params['EmotionIntensity'] = self.emotion_intensity
+        if self.account_area != "":
+            params['AccountArea'] = self.account_area
 
         timestamp = int(time.time())
         params['Timestamp'] = timestamp
@@ -150,7 +162,7 @@ class FlowingSpeechSynthesizer:
     def __create_query_string(self, param):
         param = sorted(param.items(), key=lambda d: d[0])
 
-        url = _PROTOCOL + _HOST + _PATH
+        url = _PROTOCOL + self.__get_host() + _PATH
 
         signstr = url + "?"
         for x in param:

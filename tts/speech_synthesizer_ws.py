@@ -14,6 +14,7 @@ from common.log import logger
 
 _PROTOCOL = "wss://"
 _HOST = "tts.cloud.tencent.com"
+_HOST_INTERNATIONAL = "tts-international.tencentcloud.com"
 _PATH = "/stream_ws"
 _ACTION = "TextToStreamAudioWS"
 
@@ -65,7 +66,7 @@ class SpeechSynthesizer:
         self.wst = None
         self.listener = listener
 
-        self.text = "欢迎使用腾讯云实时语音合成"
+        self.text = "Welcome to Tencent Cloud Real-Time Speech Synthesis"
         self.voice_type = 0
         self.codec = "pcm"
         self.sample_rate = 16000
@@ -74,6 +75,7 @@ class SpeechSynthesizer:
         self.session_id = ""
         self.enable_subtitle = True
         self.fast_voice_type = ""
+        self.account_area = "0"
 
     def set_voice_type(self, voice_type):
         self.voice_type = voice_type
@@ -98,6 +100,14 @@ class SpeechSynthesizer:
 
     def set_fast_voice_type(self, fast_voice_type):
         self.fast_voice_type = fast_voice_type
+
+    def set_account_area(self, account_area):
+        self.account_area = account_area
+
+    def __get_host(self):
+        if self.account_area == "1":
+            return _HOST_INTERNATIONAL
+        return _HOST
 
     def __gen_signature(self, params):
         sort_dict = sorted(params.keys())
@@ -130,6 +140,8 @@ class SpeechSynthesizer:
         params['EnableSubtitle'] = self.enable_subtitle
         if len(self.fast_voice_type) > 0:
             params['FastVoiceType'] = self.fast_voice_type
+        if self.account_area != "":
+            params['AccountArea'] = self.account_area
 
         timestamp = int(time.time())
         params['Timestamp'] = timestamp
@@ -141,7 +153,7 @@ class SpeechSynthesizer:
         
         param = sorted(param.items(), key=lambda d: d[0])
 
-        url = _PROTOCOL + _HOST + _PATH
+        url = _PROTOCOL + self.__get_host() + _PATH
 
         signstr = url + "?"
         for x in param:

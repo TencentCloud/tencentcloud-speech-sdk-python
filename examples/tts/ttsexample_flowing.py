@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# 引用 SDK
+# Import the SDK
 
 import sys
 sys.path.append("../..")
@@ -15,10 +15,11 @@ from common.utils import is_python3
 APPID = 0
 SECRET_ID = ''
 SECRET_KEY = ''
+ACCOUNT_AREA = "0"  # Account area: "0" (default, China account), "1" International account
 
-VOICETYPE = 101001 # 音色类型
-CODEC = "mp3" # 音频格式：pcm/mp3
-SAMPLE_RATE = 16000 # 音频采样率：8000/16000
+VOICETYPE = 101001 # Voice type
+CODEC = "mp3" # Audio format: pcm/mp3
+SAMPLE_RATE = 16000 # Audio sample rate: 8000/16000
 ENABLE_SUBTITLE = False
 
 
@@ -38,14 +39,14 @@ class MySpeechSynthesisListener(flowing_speech_synthesizer.FlowingSpeechSynthesi
 
     def on_synthesis_start(self, session_id):
         '''
-        session_id: 请求session id，类型字符串
+        session_id: request session id, type string
         '''
         if is_python3():
             super().on_synthesis_start(session_id)
         else:
             super(MySpeechSynthesisListener, self).on_synthesis_start(session_id)
         
-        # TODO 合成开始，添加业务逻辑
+        # TODO Synthesis started, add business logic
         if not self.audio_file:
             self.audio_file = "speech_synthesis_output." + self.codec
         self.audio_data = bytes()
@@ -56,7 +57,7 @@ class MySpeechSynthesisListener(flowing_speech_synthesizer.FlowingSpeechSynthesi
         else:
             super(MySpeechSynthesisListener, self).on_synthesis_end()
 
-        # TODO 合成结束，添加业务逻辑
+        # TODO Synthesis ended, add business logic
         logger.info("write audio file, path={}, size={}".format(
             self.audio_file, len(self.audio_data)
         ))
@@ -78,47 +79,47 @@ class MySpeechSynthesisListener(flowing_speech_synthesizer.FlowingSpeechSynthesi
 
     def on_audio_result(self, audio_bytes):
         '''
-        audio_bytes: 二进制音频，类型 bytes
+        audio_bytes: binary audio, type bytes
         '''
         if is_python3():
             super().on_audio_result(audio_bytes)
         else:
             super(MySpeechSynthesisListener, self).on_audio_result(audio_bytes)
         
-        # TODO 接收到二进制音频数据，添加实时播放或保存逻辑
+        # TODO Received binary audio data, add real-time playback or save logic
         self.audio_data += audio_bytes
 
     def on_text_result(self, response):
         '''
-        response: 文本结果，类型 dict，如下
-        字段名       类型         说明
-        code        int         错误码（无需处理，FlowingSpeechSynthesizer中已解析，错误消息路由至 on_synthesis_fail）
-        message     string      错误信息
-        session_id  string      回显客户端传入的 session id
-        request_id  string      请求 id，区分不同合成请求，一次 websocket 通信中，该字段相同
-        message_id  string      消息 id，区分不同 websocket 消息
-        final       bool        合成是否完成（无需处理，FlowingSpeechSynthesizer中已解析）
-        result      Result      文本结果结构体
+        response: text result, type dict, as follows
+        Field       Type        Description
+        code        int         Error code (no need to handle, already parsed in FlowingSpeechSynthesizer, error message is routed to on_synthesis_fail)
+        message     string      Error message
+        session_id  string      Echo of the session id passed in by the client
+        request_id  string      Request id, distinguishes different synthesis requests; this field remains the same within one websocket communication
+        message_id  string      Message id, distinguishes different websocket messages
+        final       bool        Whether synthesis is completed (no need to handle, already parsed in FlowingSpeechSynthesizer)
+        result      Result      Text result struct
 
-        Result 结构体
-        字段名       类型                说明
-        subtitles   array of Subtitle  时间戳数组
-        
-        Subtitle 结构体
-        字段名       类型     说明
-        Text        string  合成文本
-        BeginTime   int     开始时间戳
-        EndTime     int     结束时间戳
-        BeginIndex  int     开始索引
-        EndIndex    int     结束索引
-        Phoneme     string  音素
+        Result struct
+        Field       Type                Description
+        subtitles   array of Subtitle   Timestamp array
+
+        Subtitle struct
+        Field       Type    Description
+        Text        string  Synthesized text
+        BeginTime   int     Begin timestamp
+        EndTime     int     End timestamp
+        BeginIndex  int     Begin index
+        EndIndex    int     End index
+        Phoneme     string  Phoneme
         '''
         if is_python3():
             super().on_text_result(response)
         else:
             super(MySpeechSynthesisListener, self).on_text_result(response)
 
-        # TODO 接收到文本数据，添加业务逻辑
+        # TODO Received text data, add business logic
         result = response["result"]
         subtitles = []
         if "subtitles" in result and len(result["subtitles"]) > 0:
@@ -126,17 +127,17 @@ class MySpeechSynthesisListener(flowing_speech_synthesizer.FlowingSpeechSynthesi
 
     def on_synthesis_fail(self, response):
         '''
-        response: 文本结果，类型 dict，如下
-        字段名 类型
-        code        int         错误码
-        message     string      错误信息
+        response: text result, type dict, as follows
+        Field       Type        Description
+        code        int         Error code
+        message     string      Error message
         '''
         if is_python3():
             super().on_synthesis_fail(response)
         else:
             super(MySpeechSynthesisListener, self).on_synthesis_fail(response)
 
-        # TODO 合成失败，添加错误处理逻辑
+        # TODO Synthesis failed, add error handling logic
         err_code = response["code"]
         err_msg = response["message"]
         
@@ -150,6 +151,7 @@ def process(id):
     synthesizer.set_codec(CODEC)
     synthesizer.set_sample_rate(SAMPLE_RATE)
     synthesizer.set_enable_subtitle(ENABLE_SUBTITLE)
+    synthesizer.set_account_area(ACCOUNT_AREA)
    
     synthesizer.start()
     ready = synthesizer.wait_ready(5000)
@@ -158,28 +160,28 @@ def process(id):
         return
     
     texts = [
-        "五位壮士一面向顶峰攀登，一面依托大树和",
-        "岩石向敌人射击。山路上又留下了许多具敌",
-        "人的尸体。到了狼牙山峰顶，五壮士居高临",
-        "下，继续向紧跟在身后的敌人射击。不少敌人",
-        "坠落山涧，粉身碎骨。班长马宝玉负伤了，子",
-        "弹都打完了，只有胡福才手里还剩下一颗手榴",
-        "弹，他刚要拧开盖子，马宝玉抢前一步，夺过",
-        "手榴弹插在腰间，他猛地举起一块磨盘大的石",
-        "头，大声喊道：“同志们！用石头砸！”顿时，",
-        "石头像雹子一样，带着五位壮士的决心，带着",
-        "中国人民的仇恨，向敌人头上砸去。山坡上传",
-        "来一阵叽里呱啦的叫声，敌人纷纷滚落深谷。",
+        "On the Mountain of Flowers and Fruit there was ",
+        "a magic stone that had absorbed the essence of ",
+        "Heaven and Earth for countless ages. One day ",
+        "the stone split open and a stone monkey leaped ",
+        "forth, bowing to the four quarters. He became ",
+        "the Handsome Monkey King, ruler of all apes. ",
+        "Seeking immortality, he crossed the seas and ",
+        "learned the Seventy-Two Transformations, and the ",
+        "somersault cloud that carried him a hundred and ",
+        "eight thousand li in a single leap. Wielding the ",
+        "Golden-Hooped Rod, he made havoc in Heaven, until ",
+        "the Buddha pressed him beneath the Five Elements Mountain. ",
     ]
 
     while True:
         for text in texts:
             synthesizer.process(text)
-            time.sleep(5) # 模拟文本流式生成
+            time.sleep(5) # Simulate streaming text generation
         break
-    synthesizer.complete() # 发送合成完毕指令
+    synthesizer.complete() # Send synthesis completion command
 
-    synthesizer.wait() # 等待服务侧合成完成
+    synthesizer.wait() # Wait for the server-side synthesis to complete
 
     logger.info("process done")
 

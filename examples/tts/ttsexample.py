@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# 引用 SDK
+# Import the SDK
 
 import sys
 sys.path.append("../..")
@@ -17,11 +17,12 @@ from common.utils import is_python3
 APPID = 0
 SECRET_ID = ''
 SECRET_KEY = ''
+ACCOUNT_AREA = "0"  # Account area: "0" (default, China account), "1" International account
 
-VOICETYPE = 101001 # 音色类型
+VOICETYPE = 101001 # Voice type
 FASTVOICETYPE = ""
-CODEC = "pcm" # 音频格式：pcm/mp3
-SAMPLE_RATE = 16000 # 音频采样率：8000/16000
+CODEC = "pcm" # Audio format: pcm/mp3
+SAMPLE_RATE = 16000 # Audio sample rate: 8000/16000
 ENABLE_SUBTITLE = True
 
 
@@ -41,11 +42,11 @@ class MySpeechSynthesisListener(speech_synthesizer_ws.SpeechSynthesisListener):
 
     def on_synthesis_start(self, session_id):
         '''
-        session_id: 请求session id，类型字符串
+        session_id: request session id, type string
         '''
         super().on_synthesis_start(session_id)
         
-        # TODO 合成开始，添加业务逻辑
+        # TODO Synthesis started, add business logic
         if not self.audio_file:
             self.audio_file = "speech_synthesis_output_" + str(self.id) + "." + self.codec
         self.audio_data = bytes()
@@ -53,7 +54,7 @@ class MySpeechSynthesisListener(speech_synthesizer_ws.SpeechSynthesisListener):
     def on_synthesis_end(self):
         super().on_synthesis_end()
 
-        # TODO 合成结束，添加业务逻辑
+        # TODO Synthesis ended, add business logic
         logger.info("write audio file, path={}, size={}".format(
             self.audio_file, len(self.audio_data)
         ))
@@ -75,41 +76,41 @@ class MySpeechSynthesisListener(speech_synthesizer_ws.SpeechSynthesisListener):
 
     def on_audio_result(self, audio_bytes):
         '''
-        audio_bytes: 二进制音频，类型 bytes
+        audio_bytes: binary audio, type bytes
         '''
         super().on_audio_result(audio_bytes)
         
-        # TODO 接收到二进制音频数据，添加实时播放或保存逻辑
+        # TODO Received binary audio data, add real-time playback or save logic
         self.audio_data += audio_bytes
 
     def on_text_result(self, response):
         '''
-        response: 文本结果，类型 dict，如下
-        字段名       类型         说明
-        code        int         错误码（无需处理，SpeechSynthesizer中已解析，错误消息路由至 on_synthesis_fail）
-        message     string      错误信息
-        session_id  string      回显客户端传入的 session id
-        request_id  string      请求 id，区分不同合成请求，一次 websocket 通信中，该字段相同
-        message_id  string      消息 id，区分不同 websocket 消息
-        final       bool        合成是否完成（无需处理，SpeechSynthesizer中已解析）
-        result      Result      文本结果结构体
+        response: text result, type dict, as follows
+        Field       Type        Description
+        code        int         Error code (no need to handle, already parsed in SpeechSynthesizer, error message is routed to on_synthesis_fail)
+        message     string      Error message
+        session_id  string      Echo of the session id passed in by the client
+        request_id  string      Request id, distinguishes different synthesis requests; this field remains the same within one websocket communication
+        message_id  string      Message id, distinguishes different websocket messages
+        final       bool        Whether synthesis is completed (no need to handle, already parsed in SpeechSynthesizer)
+        result      Result      Text result struct
 
-        Result 结构体
-        字段名       类型                说明
-        subtitles   array of Subtitle  时间戳数组
-        
-        Subtitle 结构体
-        字段名       类型     说明
-        Text        string  合成文本
-        BeginTime   int     开始时间戳
-        EndTime     int     结束时间戳
-        BeginIndex  int     开始索引
-        EndIndex    int     结束索引
-        Phoneme     string  音素
+        Result struct
+        Field       Type                Description
+        subtitles   array of Subtitle   Timestamp array
+
+        Subtitle struct
+        Field       Type    Description
+        Text        string  Synthesized text
+        BeginTime   int     Begin timestamp
+        EndTime     int     End timestamp
+        BeginIndex  int     Begin index
+        EndIndex    int     End index
+        Phoneme     string  Phoneme
         '''
         super().on_text_result(response)
 
-        # TODO 接收到文本数据，添加业务逻辑
+        # TODO Received text data, add business logic
         result = response["result"]
         subtitles = []
         if "subtitles" in result and len(result["subtitles"]) > 0:
@@ -117,14 +118,14 @@ class MySpeechSynthesisListener(speech_synthesizer_ws.SpeechSynthesisListener):
 
     def on_synthesis_fail(self, response):
         '''
-        response: 文本结果，类型 dict，如下
-        字段名 类型
-        code        int         错误码
-        message     string      错误信息
+        response: text result, type dict, as follows
+        Field       Type        Description
+        code        int         Error code
+        message     string      Error message
         '''
         super().on_synthesis_fail(response)
 
-        # TODO 合成失败，添加错误处理逻辑
+        # TODO Synthesis failed, add error handling logic
         err_code = response["code"]
         err_msg = response["message"]
         
@@ -141,6 +142,7 @@ def process(id, text):
     synthesizer.set_sample_rate(SAMPLE_RATE)
     synthesizer.set_enable_subtitle(ENABLE_SUBTITLE)
     synthesizer.set_fast_voice_type(FASTVOICETYPE)
+    synthesizer.set_account_area(ACCOUNT_AREA)
     
     synthesizer.start()
     # wait for processing complete
@@ -162,24 +164,24 @@ if __name__ == "__main__":
         print("only support python3")
         sys.exit(0)
 
-    # 读取示例文本
+    # Read example text
     lines = read_tts_text()
 
-    #### 示例一：单线程串行调用 ####
+    #### Example 1: single-threaded serial invocation ####
     for idx, line in enumerate(lines):
         result = process(idx, line)
         print(f"\nTask {result} completed\n")
     
-    #### 示例二：多线程调用 ####
-    # thread_concurrency_num = 3 # 最大线程数
+    #### Example 2: multi-threaded invocation ####
+    # thread_concurrency_num = 3 # Maximum number of threads
     # with ThreadPoolExecutor(max_workers=thread_concurrency_num) as executor:
     #     futures = [executor.submit(process, idx, line) for idx, line in enumerate(lines)]
     #     for future in as_completed(futures):
     #         result = future.result()
     #         print(f"\nTask {result} completed\n")
 
-    #### 示例三：多进程调用（适用于高并发场景） ####
-    # process_concurrency_num = 3 # 最大进程数
+    #### Example 3: multi-process invocation (suitable for high concurrency scenarios) ####
+    # process_concurrency_num = 3 # Maximum number of processes
     # with ProcessPoolExecutor(max_workers=process_concurrency_num) as executor:
     #     futures = [executor.submit(process, idx, line) for idx, line in enumerate(lines)]
     #     for future in as_completed(futures):

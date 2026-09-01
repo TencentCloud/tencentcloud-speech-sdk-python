@@ -17,22 +17,23 @@ def is_python3():
 
 _PROTOCOL = "https://"
 _HOST = "tts.cloud.tencent.com"
+_HOST_INTERNATIONAL = "tts-international.tencentcloud.com"
 _PATH = "/stream"
 _ACTION = "TextToStreamAudio"
 
 
 class SpeechSynthesisListener:
     '''
-    reponse:  
-    所有回调均包含session_id字段
-    on_message与on_message包含data字段
-    on_fail包含Code、Message字段。
+    response:
+    All callbacks contain the session_id field.
+    on_message and on_complete contain the data field.
+    on_fail contains the Code and Message fields.
 
-    字段名	     类型    说明
-    session_id  String  本次请求id
-    data        String  语音数据
-    Code	    String  错误码
-    Message	    String  错误信息
+    Field       Type    Description
+    session_id  String  Current request id
+    data        String  Audio data
+    Code        String  Error code
+    Message     String  Error message
     '''
 
     def on_message(self, response):
@@ -56,6 +57,7 @@ class SpeechSynthesizer:
         self.volume = 0
         self.speed = 0
         self.listener = listener
+        self.account_area = "0"
 
     def set_voice_type(self, voice_type):
         self.voice_type = voice_type
@@ -72,6 +74,14 @@ class SpeechSynthesizer:
     def set_volume(self, volume):
         self.volume = volume
 
+    def set_account_area(self, account_area):
+        self.account_area = account_area
+
+    def __get_host(self):
+        if self.account_area == "1":
+            return _HOST_INTERNATIONAL
+        return _HOST
+
     def synthesis(self, text):
         session_id = str(uuid.uuid1())
         params = self.__gen_params(session_id, text)
@@ -80,7 +90,7 @@ class SpeechSynthesizer:
             "Content-Type": "application/json",
             "Authorization": str(signature)
         }
-        url = _PROTOCOL + _HOST + _PATH
+        url = _PROTOCOL + self.__get_host() + _PATH
         r = requests.post(url, headers=headers,
                           data=json.dumps(params), stream=True)
         data = None
@@ -137,6 +147,8 @@ class SpeechSynthesizer:
         params['Volume'] = self.volume
         params['SessionId'] = session_id
         params['Text'] = text
+        if self.account_area != "":
+            params['AccountArea'] = self.account_area
 
         timestamp = int(time.time())
         params['Timestamp'] = timestamp
